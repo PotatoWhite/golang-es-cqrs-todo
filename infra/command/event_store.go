@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewEventStore(db *gorm.DB, ec *chan eventModel.Event) EventStore {
+func NewEventStore(db *gorm.DB, ec chan eventModel.Event) EventStore {
 	return &eventStore{
 		db:           db,
 		eventChannel: ec,
@@ -22,7 +22,7 @@ type EventStore interface {
 
 type eventStore struct {
 	db           *gorm.DB
-	eventChannel *chan eventModel.Event
+	eventChannel chan eventModel.Event
 }
 
 func (evs *eventStore) GetLastEvent(aggregateId uuid.UUID) (event *Event, err error) {
@@ -54,7 +54,7 @@ func (evs *eventStore) AddAndPublishEvent(userNo uint, event eventModel.Event) (
 
 	// publish event to Projector by channel if it is set
 	if evs.eventChannel != nil {
-		*evs.eventChannel <- event
+		evs.eventChannel <- event
 	}
 
 	return eventEntity, nil

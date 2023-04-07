@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
-	"github.com/potato/simple-restful-api/cmd/config"
+	"github.com/potato/simple-restful-api/infra/config"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/driver/postgres"
