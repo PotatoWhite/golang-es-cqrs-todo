@@ -3,7 +3,7 @@ package commandApi
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/potato/simple-restful-api/pkg/domain/command"
+	"github.com/potato/simple-restful-api/infra/command"
 	"github.com/potato/simple-restful-api/pkg/domain/spec"
 	"net/http"
 	"strconv"
@@ -34,173 +34,104 @@ type todoRouter struct {
 }
 
 func (r *todoRouter) UpdateTitle(c *gin.Context) {
-
-	// validate path params
-	userNo, aggregateID, err := r.getPathParams(c)
+	userNo, aggregateID, err := r.parsePathParams(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		r.respondWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
-	// check authorization
 	if !r.checkOwnership(aggregateID, userNo) {
-		c.JSON(http.StatusForbidden, gin.H{
-			"error": "you are not the owner",
-		})
+		r.respondWithError(c, http.StatusForbidden, "you are not the owner")
 		return
 	}
 
-	// get title from request body
 	var reqBody spec.UpdateTitle
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		r.respondWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
-	// add command to command store
 	resultEvent := spec.NewTitleUpdatedEvent(aggregateID, userNo, reqBody.Title)
 	publishEvent, err := r.evs.AddAndPublishEvent(userNo, &resultEvent)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		r.respondWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	// return response with command
 	c.JSON(http.StatusOK, &publishEvent)
-	return
-}
-
-func (r *todoRouter) checkOwnership(aggregateID uuid.UUID, userNo uint) bool {
-	lastOne, err := r.evs.GetLastEvent(aggregateID)
-	if err != nil || lastOne.UserNo != userNo {
-		return false
-	}
-	return true
 }
 
 func (r *todoRouter) UpdateStatus(c *gin.Context) {
-
-	// validate path params
-	userNo, aggregateID, err := r.getPathParams(c)
+	userNo, aggregateID, err := r.parsePathParams(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		r.respondWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
-	// check authorization
 	if !r.checkOwnership(aggregateID, userNo) {
-		c.JSON(http.StatusForbidden, gin.H{
-			"error": "you are not the owner",
-		})
+		r.respondWithError(c, http.StatusForbidden, "you are not the owner")
 		return
 	}
 
-	// get title from request body
 	var reqBody spec.UpdateStatus
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		r.respondWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
-	// add command to command store
 	resultEvent := spec.NewStatusUpdatedEvent(aggregateID, userNo, reqBody.Status)
 	publishEvent, err := r.evs.AddAndPublishEvent(userNo, &resultEvent)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		r.respondWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	// return response with command
 	c.JSON(http.StatusOK, &publishEvent)
-	return
 }
 
 func (r *todoRouter) Delete(c *gin.Context) {
-	// validate path params
-	userNo, aggregateID, err := r.getPathParams(c)
+	userNo, aggregateID, err := r.parsePathParams(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		r.respondWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
-	// check authorization
 	if !r.checkOwnership(aggregateID, userNo) {
-		c.JSON(http.StatusForbidden, gin.H{
-			"error": "you are not the owner",
-		})
+		r.respondWithError(c, http.StatusForbidden, "you are not the owner")
 		return
 	}
 
-	// get title from request body
-	var reqBody spec.UpdateTitle
-	if err := c.ShouldBindJSON(&reqBody); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
-
-	// add command to command store
 	resultEvent := spec.NewTodoDeletedEvent(aggregateID)
 	publishEvent, err := r.evs.AddAndPublishEvent(userNo, &resultEvent)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		r.respondWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	// return response with command
 	c.JSON(http.StatusOK, &publishEvent)
-	return
 }
 
 func (r *todoRouter) Create(c *gin.Context) {
-	// validate path params
-	// get userNo(uint) from path
-	userNoUint64, err := strconv.ParseUint(c.Param("userNo"), 10, 64)
+	userNo, err := r.parseUserNo(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		r.respondWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	userNo := uint(userNoUint64)
 
-	// get title, userNo from request body
 	var reqBody spec.CreateTodo
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		r.respondWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
-	// add command to command store
 	resultEvent := spec.NewTodoCreatedEvent(uuid.New(), userNo, reqBody.Title)
 	publishEvent, err := r.evs.AddAndPublishEvent(userNo, &resultEvent)
 	if err != nil {
+		r.respondWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	// return response
 	c.JSON(http.StatusCreated, publishEvent)
-
-	return
 }
 
 func (r *todoRouter) getPathParams(c *gin.Context) (userNo uint, aggregateId uuid.UUID, error error) {
@@ -216,4 +147,39 @@ func (r *todoRouter) getPathParams(c *gin.Context) (userNo uint, aggregateId uui
 		return userNo, aggregateId, err
 	}
 	return userNo, aggregateId, error
+}
+
+func (r *todoRouter) respondWithError(c *gin.Context, status int, err interface{}) {
+	c.JSON(status, gin.H{
+		"error": err,
+	})
+}
+
+func (r *todoRouter) parsePathParams(c *gin.Context) (userNo uint, aggregateID uuid.UUID, err error) {
+	userNo, err = r.parseUserNo(c)
+	if err != nil {
+		return 0, uuid.Nil, err
+	}
+	aggregateID, err = uuid.Parse(c.Param("id"))
+	if err != nil {
+		return 0, uuid.Nil, err
+	}
+
+	return userNo, aggregateID, nil
+}
+
+func (r *todoRouter) parseUserNo(c *gin.Context) (uint, error) {
+	userNoUint64, err := strconv.ParseUint(c.Param("userNo"), 10, 64)
+	if err != nil {
+		return 0, err
+	}
+	return uint(userNoUint64), nil
+}
+
+func (r *todoRouter) checkOwnership(aggregateID uuid.UUID, userNo uint) bool {
+	lastOne, err := r.evs.GetLastEvent(aggregateID)
+	if err != nil || lastOne.UserNo != userNo {
+		return false
+	}
+	return true
 }
