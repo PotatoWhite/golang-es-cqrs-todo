@@ -1,0 +1,29 @@
+### Create a Todo
+POST localhost:8080/1/todos
+Content-Type: application/json
+
+{
+    "title": "My Todo"
+}
+
+### Update Title
+PATCH localhost:8080/1/todos/ 2dec0a9e-02a6-4dab-9789-84f531625652/title
+Content-Type: application/json
+
+{
+  "userNo": 1,
+  "title": "My Todo3"
+}
+
+### Update Status
+PATCH localhost:8080/1/todos/d7c1a622-74e3-4ff8-b961-13e6b031f604/status
+Content-Type: application/json
+
+{
+  "userNo": 1,
+  "status": "DONE"
+}
+
+
+### Get Todo List
+GET localhost:8080/0/todos

@@ -1,0 +1,35 @@
+app:
+  name: todo
+server:
+  port: 8080
+
+# gorm and postgresql
+command:
+  autoMigrate: true
+  eventStoreDB:
+    host: localhost
+    port: 5432
+    user: event_account
+    password: 1234
+    database: event_db
+projector:
+  tokenStoreDB:
+    host: localhost
+    port: 5432
+    user: token_account
+    password: 1234
+    database: token_db
+  kafka:
+    bootstrapServers: localhost:9092
+    topic: todo
+query:
+  entityStoreDB:
+    host: localhost
+    port: 27017
+    user: todo_account
+    password: 1234
+    database: todo_db
+    autoMigrate: true
+# profile (local, dev, alpha, stage, real)
+profile:
+  name: local
