@@ -3,7 +3,6 @@ package command
 import (
 	"encoding/json"
 	"github.com/google/uuid"
-	"time"
 )
 
 type Event struct {
@@ -16,15 +15,4 @@ type Event struct {
 
 func (Event) TableName() string {
 	return "event_store"
-}
-
-type Token struct {
-	ID          uint   `gorm:"primarykey"`
-	EventId     uint   `gorm:"index"`
-	TargetGroup string `gorm:"index"`
-	CreatedAt   time.Time
-}
-
-func (Token) TableName() string {
-	return "event_store_token"
 }

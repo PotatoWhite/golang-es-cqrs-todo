@@ -1,19 +1,8 @@
-CREATE
-DATABASE event_db;
-CREATE
-DATABASE token_db;
+CREATE DATABASE event_db;
 
-CREATE
-USER event_account WITH PASSWORD '1234';
-CREATE
-USER token_account WITH PASSWORD '1234';
+CREATE USER event_account WITH PASSWORD '1234';
 
-ALTER
-USER event_account WITH SUPERUSER;
-ALTER
-USER token_account WITH SUPERUSER;
+ALTER USER event_account WITH SUPERUSER;
 
-GRANT ALL PRIVILEGES ON DATABASE
-event_db TO event_account;
-GRANT ALL PRIVILEGES ON DATABASE
-token_db TO token_account;
+GRANT ALL PRIVILEGES ON DATABASE event_db TO event_account;
+

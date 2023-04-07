@@ -1,5 +1,5 @@
 app:
-  name: todo
+  name: pkg
 server:
   port: 8080
 
@@ -13,16 +13,10 @@ command:
     password: 1234
     database: event_db
 projector:
-  tokenStoreDB:
-    host: localhost
-    port: 5432
-    user: token_account
-    password: 1234
-    database: token_db
   kafka:
     bootstrapServers: localhost:9092
-    topic: todo
-    consumerGroup: todo
+    topic: pkg
+    consumerGroup: pkg
 query:
   entityStoreDB:
     host: localhost

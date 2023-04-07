@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/potato/simple-restful-api/infra/command"
-	"github.com/potato/simple-restful-api/pkg/domain/spec"
+	"github.com/potato/simple-restful-api/pkg/domain/todospec"
 	"net/http"
 	"strconv"
 )
@@ -45,13 +45,13 @@ func (r *todoRouter) UpdateTitle(c *gin.Context) {
 		return
 	}
 
-	var reqBody spec.UpdateTitle
+	var reqBody todospec.UpdateTitle
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
 		r.respondWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
-	resultEvent := spec.NewTitleUpdatedEvent(aggregateID, userNo, reqBody.Title)
+	resultEvent := todospec.NewTitleUpdatedEvent(aggregateID, userNo, reqBody.Title)
 	publishEvent, err := r.evs.AddAndPublishEvent(userNo, &resultEvent)
 	if err != nil {
 		r.respondWithError(c, http.StatusInternalServerError, err)
@@ -73,13 +73,13 @@ func (r *todoRouter) UpdateStatus(c *gin.Context) {
 		return
 	}
 
-	var reqBody spec.UpdateStatus
+	var reqBody todospec.UpdateStatus
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
 		r.respondWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
-	resultEvent := spec.NewStatusUpdatedEvent(aggregateID, userNo, reqBody.Status)
+	resultEvent := todospec.NewStatusUpdatedEvent(aggregateID, userNo, reqBody.Status)
 	publishEvent, err := r.evs.AddAndPublishEvent(userNo, &resultEvent)
 	if err != nil {
 		r.respondWithError(c, http.StatusInternalServerError, err)
@@ -101,7 +101,7 @@ func (r *todoRouter) Delete(c *gin.Context) {
 		return
 	}
 
-	resultEvent := spec.NewTodoDeletedEvent(aggregateID)
+	resultEvent := todospec.NewTodoDeletedEvent(aggregateID)
 	publishEvent, err := r.evs.AddAndPublishEvent(userNo, &resultEvent)
 	if err != nil {
 		r.respondWithError(c, http.StatusInternalServerError, err)
@@ -118,13 +118,13 @@ func (r *todoRouter) Create(c *gin.Context) {
 		return
 	}
 
-	var reqBody spec.CreateTodo
+	var reqBody todospec.CreateTodo
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
 		r.respondWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
-	resultEvent := spec.NewTodoCreatedEvent(uuid.New(), userNo, reqBody.Title)
+	resultEvent := todospec.NewTodoCreatedEvent(uuid.New(), userNo, reqBody.Title)
 	publishEvent, err := r.evs.AddAndPublishEvent(userNo, &resultEvent)
 	if err != nil {
 		r.respondWithError(c, http.StatusInternalServerError, err)
@@ -162,7 +162,7 @@ func (r *todoRouter) parsePathParams(c *gin.Context) (userNo uint, aggregateID u
 	}
 	aggregateID, err = uuid.Parse(c.Param("id"))
 	if err != nil {
-		return 0, uuid.Nil, err
+		return userNo, uuid.Nil, err
 	}
 
 	return userNo, aggregateID, nil
