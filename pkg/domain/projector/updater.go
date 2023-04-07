@@ -116,6 +116,7 @@ func (p *ProjectHandler) createTodo(event spec.TodoCreated) (todo *spec.Todo, er
 	return &spec.Todo{
 		Id:        event.ID(),
 		Title:     event.Title,
+		UserNo:    event.UserNo,
 		Status:    spec.TodoStatusInProgress,
 		AppliedAt: event.AppliedAt,
 	}, nil
