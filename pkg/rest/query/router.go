@@ -2,7 +2,7 @@ package queryApi
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/potato/simple-restful-api/pkg/domain/query"
+	"github.com/potato/simple-restful-api/infra/query"
 	"strconv"
 )
 

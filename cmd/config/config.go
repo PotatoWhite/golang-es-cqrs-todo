@@ -27,6 +27,7 @@ type AppConfig struct {
 type KafkaConfig struct {
 	BootstrapServers string
 	Topic            string
+	ConsumerGroup    string
 }
 
 type Projector struct {
