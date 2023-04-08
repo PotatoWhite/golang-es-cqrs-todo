@@ -1,7 +1,7 @@
 package todospec
 
 import (
-	eventModel "github.com/potato/simple-restful-api/infra/model"
+	"github.com/easywalk/go-simply-cqrs"
 	"time"
 )
 
@@ -14,25 +14,25 @@ const (
 )
 
 type TodoCreated struct {
-	eventModel.EventModel
+	simply.EventModel
 	Title  string `json:"title"`
 	UserNo uint   `json:"user_no"`
 }
 
 type TitleUpdated struct {
-	eventModel.EventModel
+	simply.EventModel
 	Title  string `json:"title"`
 	UserNo uint   `json:"user_no"`
 }
 
 type StatusUpdated struct {
-	eventModel.EventModel
+	simply.EventModel
 	Status string `json:"status"`
 	UserNo uint   `json:"user_no"`
 }
 
 type TodoDeleted struct {
-	eventModel.EventModel
+	simply.EventModel
 	AppliedAt time.Time `json:"applied_at"`
 	UserNo    uint      `json:"user_no"`
 }

@@ -3,9 +3,8 @@ package repository
 import (
 	"context"
 	"encoding/json"
+	"github.com/easywalk/go-simply-cqrs"
 	"github.com/google/uuid"
-	"github.com/potato/simple-restful-api/infra/command"
-	"github.com/potato/simple-restful-api/infra/projector/generator"
 	"github.com/potato/simple-restful-api/pkg/domain/todospec"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -31,12 +30,12 @@ type TodoStore interface {
 	GetTodosByUserNoAndStatus(userNo uint, status string) ([]todospec.Todo, error)
 	GetTodosByUserNoAndNotStatus(userNo uint, status string) ([]todospec.Todo, error)
 	SaveTodo(todo *todospec.Todo) error
-	ReplayEvents(events []*command.Event) (todo *todospec.Todo, err error)
+	ReplayEvents(events []*simply.EventEntity) (todo *todospec.Todo, err error)
 }
 
 type todoStore struct {
 	collection *mongo.Collection
-	Eg         generator.EntityGenerator
+	Eg         simply.EntityGenerator
 }
 
 func (ets *todoStore) GetTodoByUserNoAndId(userNo uint, id uuid.UUID) (*todospec.Todo, error) {
@@ -123,7 +122,7 @@ func toBSON(todo *todospec.Todo) bson.M {
 	}
 }
 
-func (ets *todoStore) ReplayEvents(events []*command.Event) (todo *todospec.Todo, err error) {
+func (ets *todoStore) ReplayEvents(events []*simply.EventEntity) (todo *todospec.Todo, err error) {
 	for _, event := range events {
 		switch event.EventType {
 		case todospec.TodoCreatedEvent:

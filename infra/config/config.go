@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/easywalk/go-simply-cqrs"
 	"github.com/spf13/viper"
 	"log"
 	"os"
@@ -13,45 +14,15 @@ var (
 
 type Config struct {
 	App       *AppConfig
-	Command   *Command
-	Query     *Query
-	Projector *Projector
+	Command   *simply.Command
+	Query     *simply.Query
+	Projector *simply.Projector
 	Server    *ServerConfig
 	Profile   *profile
 }
 
 type AppConfig struct {
 	Name string
-}
-
-type KafkaConfig struct {
-	BootstrapServers string
-	Topic            string
-	ConsumerGroup    string
-}
-
-type Projector struct {
-	AutoMigration bool
-	Kafka         *KafkaConfig
-}
-
-type Command struct {
-	AutoMigration bool
-	EventStoreDB  *DBConfig
-	Kafka         *KafkaConfig
-}
-
-type Query struct {
-	AutoMigration bool
-	EntityStoreDB *DBConfig
-}
-
-type DBConfig struct {
-	Host     string
-	Port     string
-	User     string
-	Password string
-	Database string
 }
 
 type ServerConfig struct {

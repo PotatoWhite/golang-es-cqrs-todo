@@ -15,8 +15,8 @@ command:
 projector:
   kafka:
     bootstrapServers: localhost:9092
-    topic: pkg
-    consumerGroup: pkg
+    topic: todo
+    consumerGroup: todo
 query:
   entityStoreDB:
     host: localhost
