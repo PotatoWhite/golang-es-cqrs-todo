@@ -1,15 +1,15 @@
 package commandApi
 
 import (
+	"github.com/easywalk/go-simply-cqrs"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/potato/simple-restful-api/infra/command"
 	"github.com/potato/simple-restful-api/pkg/domain/todospec"
 	"net/http"
 	"strconv"
 )
 
-func NewTodoRouter(group *gin.RouterGroup, evs command.EventStore) TodoRouter {
+func NewTodoRouter(group *gin.RouterGroup, evs simply.EventStore) TodoRouter {
 
 	router := &todoRouter{
 		evs: evs,
@@ -30,7 +30,7 @@ type TodoRouter interface {
 }
 
 type todoRouter struct {
-	evs command.EventStore
+	evs simply.EventStore
 }
 
 func (r *todoRouter) UpdateTitle(c *gin.Context) {

@@ -1,15 +1,15 @@
 package todospec
 
 import (
+	"github.com/easywalk/go-simply-cqrs"
 	"github.com/google/uuid"
-	eventModel "github.com/potato/simple-restful-api/infra/model"
 	"time"
 )
 
 // NewTodoCreatedEvent create TodoCreated command
 func NewTodoCreatedEvent(aggregateID uuid.UUID, userNo uint, title string) TodoCreated {
 	return TodoCreated{
-		EventModel: eventModel.EventModel{
+		EventModel: simply.EventModel{
 			AggregateID: aggregateID,
 			EventType:   TodoCreatedEvent,
 			AppliedAt:   time.Now(),
@@ -22,7 +22,7 @@ func NewTodoCreatedEvent(aggregateID uuid.UUID, userNo uint, title string) TodoC
 // NewTitleUpdatedEvent create TitleUpdated command
 func NewTitleUpdatedEvent(aggregateID uuid.UUID, userNo uint, title string) TitleUpdated {
 	return TitleUpdated{
-		EventModel: eventModel.EventModel{
+		EventModel: simply.EventModel{
 			AggregateID: aggregateID,
 			EventType:   TitleUpdatedEvent,
 			AppliedAt:   time.Now(),
@@ -35,7 +35,7 @@ func NewTitleUpdatedEvent(aggregateID uuid.UUID, userNo uint, title string) Titl
 // NewStatusUpdatedEvent create StatusUpdated command
 func NewStatusUpdatedEvent(aggregateID uuid.UUID, userNo uint, status string) StatusUpdated {
 	return StatusUpdated{
-		EventModel: eventModel.EventModel{
+		EventModel: simply.EventModel{
 			AggregateID: aggregateID,
 			EventType:   StatusUpdatedEvent,
 			AppliedAt:   time.Now(),
@@ -48,7 +48,7 @@ func NewStatusUpdatedEvent(aggregateID uuid.UUID, userNo uint, status string) St
 // NewTodoDeletedEvent create TodoDeleted command
 func NewTodoDeletedEvent(aggregateID uuid.UUID) TodoDeleted {
 	return TodoDeleted{
-		EventModel: eventModel.EventModel{
+		EventModel: simply.EventModel{
 			AggregateID: aggregateID,
 			EventType:   TodoDeletedEvent,
 			AppliedAt:   time.Now(),

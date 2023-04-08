@@ -3,12 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/easywalk/go-simply-cqrs"
 	"github.com/gin-gonic/gin"
-	"github.com/potato/simple-restful-api/infra/command"
 	"github.com/potato/simple-restful-api/infra/config"
-	"github.com/potato/simple-restful-api/infra/model"
+
 	"github.com/potato/simple-restful-api/infra/monitoring"
-	"github.com/potato/simple-restful-api/infra/projector/watcher"
 	"github.com/potato/simple-restful-api/pkg"
 	"github.com/potato/simple-restful-api/pkg/rest/command"
 	"github.com/potato/simple-restful-api/pkg/rest/query"
@@ -24,15 +23,15 @@ func main() {
 	cfg := loadCfg()
 
 	// init event channel
-	eventChannel := make(chan eventModel.Event, 100)
+	eventChannel := make(chan simply.Event, 100)
 
 	// start event store
-	eventStore := command.CreateCommander(cfg.Command, eventChannel) // events -> event store
-	todoStore := todo.CreateTodoService(cfg.Query)                   // events -> entity -> pkg store
+	eventStore := simply.CreateCommander(cfg.Command, eventChannel) // events -> event store
+	todoStore := todo.CreateTodoService(cfg.Query)                  // events -> entity -> pkg store
 
-	generator := todo.NewEntityGenerator(todoStore)                             // events -> entity
-	go watcher.CreateProjector(cfg.Projector, eventChannel).Run()               // event channel -> kafka
-	go watcher.StartEntityGenerator(eventStore, generator, cfg.Projector.Kafka) // kafka -> events -> projector
+	generator := todo.NewEntityGenerator(todoStore)                            // events -> entity
+	go simply.CreateProjector(cfg.Projector, eventChannel).Run()               // event channel -> kafka
+	go simply.StartEntityGenerator(eventStore, generator, cfg.Projector.Kafka) // kafka -> events -> projector
 
 	engine := gin.Default()
 	todoGroup := engine.Group("")
